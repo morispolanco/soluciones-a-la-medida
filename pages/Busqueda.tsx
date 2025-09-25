@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { buscarClientes } from '../services/geminiService';
@@ -201,7 +200,7 @@ export const Busqueda: React.FC = () => {
             <input type="text" id="pais" value={filtros.pais} onChange={e => setFiltros({...filtros, pais: e.target.value})} placeholder="Ej: Guatemala, México" className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" required />
           </div>
           <button type="submit" disabled={!isFormValid || isLoading} className="w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors">
-            {isLoading ? 'Generando...' : 'Generar Propuestas'}
+            {isLoading ? 'Generando...' : 'Generar Prospectos'}
           </button>
         </form>
         {error && <p className="text-red-500 mt-4">{error}</p>}
