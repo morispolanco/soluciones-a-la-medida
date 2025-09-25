@@ -128,7 +128,7 @@ const PromptModal: React.FC<{
 // --- Main Page ---
 export const Busqueda: React.FC = () => {
   const { perfil, addProspectos } = useAppContext();
-  const [filtros, setFiltros] = useState({ industria: '', pais: '' });
+  const [filtros, setFiltros] = useState({ pais: '', probabilidadMin: '80' });
   const [resultados, setResultados] = useState<ClientePotencial[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -138,7 +138,7 @@ export const Busqueda: React.FC = () => {
   const [clienteParaEmail, setClienteParaEmail] = useState<ClientePotencial | null>(null);
   const [clienteParaPrompt, setClienteParaPrompt] = useState<ClientePotencial | null>(null);
 
-  const isFormValid = filtros.industria && filtros.pais && perfil.nombre;
+  const isFormValid = filtros.pais && filtros.probabilidadMin && perfil.nombre;
 
   const handleSelectProspecto = (id: string) => {
     setSelectedIds(prev => {
@@ -176,7 +176,13 @@ export const Busqueda: React.FC = () => {
     setSelectedIds(new Set());
 
     try {
-      const clientes = await buscarClientes(filtros.industria, filtros.pais);
+      const probMin = parseInt(filtros.probabilidadMin, 10);
+      if (isNaN(probMin) || probMin < 1 || probMin > 100) {
+        setError("La probabilidad mínima debe ser un número entre 1 y 100.");
+        setIsLoading(false);
+        return;
+      }
+      const clientes = await buscarClientes(filtros.pais, probMin);
       setResultados(clientes);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido al buscar.');
@@ -190,14 +196,25 @@ export const Busqueda: React.FC = () => {
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
       <div className="bg-white dark:bg-gray-800 shadow-xl rounded-lg p-6 md:p-8 mb-8">
         <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-4">Generador de Propuestas de IA</h2>
-        <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-          <div className="md:col-span-1">
-            <label htmlFor="industria" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Industria o Comercio</label>
-            <input type="text" id="industria" value={filtros.industria} onChange={e => setFiltros({...filtros, industria: e.target.value})} placeholder="Ej: Restaurantes, Abogados" className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" required />
-          </div>
-          <div className="md:col-span-1">
+        <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+          <div className="md:col-span-2">
             <label htmlFor="pais" className="block text-sm font-medium text-gray-700 dark:text-gray-300">País</label>
-            <input type="text" id="pais" value={filtros.pais} onChange={e => setFiltros({...filtros, pais: e.target.value})} placeholder="Ej: Guatemala, México" className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" required />
+            <input type="text" id="pais" value={filtros.pais} onChange={e => setFiltros(prev => ({ ...prev, pais: e.target.value}))} placeholder="Ej: Guatemala, México" className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" required />
+          </div>
+          <div>
+            <label htmlFor="probabilidadMin" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Probabilidad Mín. (%)</label>
+            <input 
+              type="number" 
+              id="probabilidadMin" 
+              name="probabilidadMin"
+              value={filtros.probabilidadMin} 
+              onChange={e => setFiltros(prev => ({ ...prev, probabilidadMin: e.target.value }))} 
+              placeholder="Ej: 80" 
+              min="1" 
+              max="100"
+              className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" 
+              required 
+            />
           </div>
           <button type="submit" disabled={!isFormValid || isLoading} className="w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors">
             {isLoading ? 'Generando...' : 'Generar Prospectos'}

@@ -1,28 +1,27 @@
-
 import { GoogleGenAI } from "@google/genai";
 import type { PerfilUsuario, ClientePotencial } from '../types';
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 
-export const buscarClientes = async (industria: string, pais: string): Promise<ClientePotencial[]> => {
+export const buscarClientes = async (pais: string, probabilidadMin: number): Promise<ClientePotencial[]> => {
   try {
     const systemInstruction = "Eres un consultor experto en soluciones de IA para B2B. Tu trabajo es identificar necesidades empresariales y proponer aplicaciones de IA específicas. Debes responder ÚNICAMENTE con un array JSON válido.";
     const miServicio = "Crear aplicaciones personalizadas basadas en grandes modelos de lenguaje para solucionar necesidades específicas de industrias o comercios.";
 
     const prompt = `
     Mi servicio es: "${miServicio}".
-    Busca hasta 5 empresas de la industria '${industria}' en '${pais}'.
+    Busca hasta 30 empresas en '${pais}' que sean excelentes prospectos para mi servicio.
 
     Para cada empresa, DEBES realizar las siguientes tareas:
-    1.  **Encontrar un Contacto Relevante**: Usando Google Search, identifica un gerente, director o encargado. Obtén su nombre, cargo y email. IGNORA emails genéricos como 'info@'.
+    1.  **Encontrar un Contacto Relevante**: Usando Google Search, identifica un gerente, director o encargado. Obtén su nombre, cargo y un email que sea personal o de su puesto directo. Es CRÍTICO que el email NO sea genérico (ej: 'info@', 'contacto@', 'ventas@', 'soporte@', 'gerencia@'). Si no puedes encontrar un email de contacto válido y no genérico, descarta a la empresa y busca otra.
     2.  **Identificar una Necesidad Concreta**: Analiza el modelo de negocio de la empresa e identifica un problema específico, una ineficiencia o una oportunidad de mejora que puedan tener. Sé muy concreto. Esto será el 'analisisNecesidad'.
     3.  **Proponer una Solución de IA**: Diseña un concepto para una aplicación de IA personalizada que resuelva la necesidad identificada. Describe la aplicación y sus beneficios clave. Esto será la 'solucionPropuesta'.
     4.  **Crear un Prompt de Solución**: Escribe un prompt técnico y detallado para un LLM (como Gemini) que pueda generar un prototipo o una especificación detallada de la solución de IA propuesta. Esto será el 'promptSolucion'.
-    5.  **Estimar Probabilidad de Aceptación**: Asigna una puntuación del 80 al 100 que represente la probabilidad de que la empresa esté interesada en esta propuesta ('probabilidadContratacion').
+    5.  **Estimar Probabilidad de Aceptación**: Asigna una puntuación entre ${probabilidadMin} y 100 que represente la probabilidad de que la empresa esté interesada en esta propuesta ('probabilidadContratacion'). La probabilidad debe ser realista y justificada por la necesidad y la solución.
 
     REGLAS ESTRICTAS:
-    - Todos los campos son OBLIGATORIOS.
+    - Todos los campos son OBLIGATORIOS, especialmente el email de contacto no genérico.
     - La respuesta DEBE ser EXCLUSIVAMENTE un array JSON válido, empezando con '[' y terminando con ']'. No incluyas texto explicativo ni marcadores de código.
     - Ordena el resultado final de mayor a menor 'probabilidadContratacion'.
 
@@ -33,12 +32,12 @@ export const buscarClientes = async (industria: string, pais: string): Promise<C
       "paginaWeb": "string",
       "contacto": { "nombre": "string", "cargo": "string", "email": "string", "telefono": "string", "emailVerificado": "boolean" },
       "ubicacion": "string (ciudad/país, ej: '${pais}')",
-      "sector": "string (ej: '${industria}')",
+      "sector": "string (la industria de la empresa)",
       "direccionCompleta": "string",
       "analisisNecesidad": "string (La necesidad específica que identificaste)",
       "solucionPropuesta": "string (La descripción de la aplicación de IA que propones)",
       "promptSolucion": "string (El prompt técnico para desarrollar la solución)",
-      "probabilidadContratacion": "number (entre 80 y 100)",
+      "probabilidadContratacion": "number (entre ${probabilidadMin} y 100)",
       "calificacion": { "puntuacion": "number", "reseñas": "number" }
     }
     `;
