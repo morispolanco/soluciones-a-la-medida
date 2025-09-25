@@ -10,6 +10,7 @@ import { Emails } from './pages/Emails';
 import { Perfil } from './pages/Perfil';
 import { ProspectoDetalle } from './pages/ProspectoDetalle';
 import { Prospectos } from './pages/Prospectos';
+import { Propuestas } from './pages/Propuestas';
 import { Login } from './pages/Login';
 import { Registro } from './pages/Registro';
 import { ProtectedRoute } from './components/ProtectedRoute';
@@ -22,6 +23,7 @@ const AppLayout: React.FC = () => (
         <Route path="/" element={<Busqueda />} />
         <Route path="/busqueda" element={<Busqueda />} />
         <Route path="/prospectos" element={<Prospectos />} />
+        <Route path="/propuestas" element={<Propuestas />} />
         <Route path="/prospecto/:prospectoId" element={<ProspectoDetalle />} />
         <Route path="/emails" element={<Emails />} />
         <Route path="/perfil" element={<Perfil />} />
