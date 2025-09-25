@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -82,11 +81,11 @@ export const Header: React.FC = () => {
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-2">
                 <NavLink to="/" className={getNavLinkClass}>Dashboard</NavLink>
+                <NavLink to="/perfil" className={getNavLinkClass}>Perfil</NavLink>
                 <NavLink to="/busqueda" className={getNavLinkClass}>Búsqueda</NavLink>
                 <NavLink to="/prospectos" className={getProspectosLinkClass}>Prospectos</NavLink>
-                <NavLink to="/propuestas" className={getNavLinkClass}>Propuestas</NavLink>
                 <NavLink to="/emails" className={getNavLinkClass}>Emails</NavLink>
-                <NavLink to="/perfil" className={getNavLinkClass}>Perfil</NavLink>
+                <NavLink to="/propuestas" className={getNavLinkClass}>Propuestas</NavLink>
               </div>
             </div>
           </div>
