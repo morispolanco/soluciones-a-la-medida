@@ -12,6 +12,7 @@ export const buscarClientes = async (pais: string, probabilidadMin: number): Pro
     const prompt = `
     Mi servicio es: "${miServicio}".
     Busca hasta 30 empresas en '${pais}' que sean excelentes prospectos para mi servicio.
+    **CRITERIO CLAVE**: Los resultados deben ser de industrias pequeñas o medianas. No incluyas grandes corporaciones ni grandes comercios.
 
     Para cada empresa, DEBES realizar las siguientes tareas:
     1.  **Encontrar un Contacto Relevante**: Usando Google Search, identifica un gerente, director o encargado. Obtén su nombre, cargo y un email que sea personal o de su puesto directo. Es CRÍTICO que el email NO sea genérico (ej: 'info@', 'contacto@', 'ventas@', 'soporte@', 'gerencia@'). Si no puedes encontrar un email de contacto válido y no genérico, descarta a la empresa y busca otra.
@@ -21,6 +22,7 @@ export const buscarClientes = async (pais: string, probabilidadMin: number): Pro
     5.  **Estimar Probabilidad de Aceptación**: Asigna una puntuación entre ${probabilidadMin} y 100 que represente la probabilidad de que la empresa esté interesada en esta propuesta ('probabilidadContratacion'). La probabilidad debe ser realista y justificada por la necesidad y la solución.
 
     REGLAS ESTRICTAS:
+    - **Enfócate EXCLUSIVAMENTE en empresas pequeñas o medianas.** Evita grandes corporaciones, cadenas de retail o empresas multinacionales conocidas.
     - Todos los campos son OBLIGATORIOS, especialmente el email de contacto no genérico.
     - La respuesta DEBE ser EXCLUSIVAMENTE un array JSON válido, empezando con '[' y terminando con ']'. No incluyas texto explicativo ni marcadores de código.
     - Ordena el resultado final de mayor a menor 'probabilidadContratacion'.
