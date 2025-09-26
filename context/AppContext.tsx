@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
 // FIX: Add Servicio to import list.
 import type { PerfilUsuario, EmailGenerado, ClientePotencial, LlamadaRegistrada, Servicio } from '../types';
@@ -85,19 +84,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setGoogleClientIdState(id);
   };
   
-  const addEmail = (email: Omit<EmailGenerado, 'id' | 'fecha'>) => {
-    const newEmail = { 
-      ...email, 
-      id: Date.now().toString(),
-      fecha: new Date().toISOString()
-    };
-    setEmails(prev => [newEmail, ...prev]);
-  };
-  
-  const removeEmails = (emailIds: string[]) => {
-    setEmails(prev => prev.filter(e => !emailIds.includes(e.id)));
-  };
-
   const addProspectos = (newProspectos: ClientePotencial[]) => {
     setProspectosState(prev => {
         const prospectosMap = new Map(prev.map(p => [p.id, p]));
@@ -113,6 +99,21 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         });
         return Array.from(prospectosMap.values());
     });
+  };
+
+  const addEmail = (email: Omit<EmailGenerado, 'id' | 'fecha'>) => {
+    const newEmail = { 
+      ...email, 
+      id: Date.now().toString(),
+      fecha: new Date().toISOString()
+    };
+    setEmails(prev => [newEmail, ...prev]);
+    // Asegurarse de que el prospecto también se guarda para que la propuesta no "desaparezca"
+    addProspectos([email.destinatario]);
+  };
+  
+  const removeEmails = (emailIds: string[]) => {
+    setEmails(prev => prev.filter(e => !emailIds.includes(e.id)));
   };
 
   const removeProspectos = (prospectoIds: string[]) => {
